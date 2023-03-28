@@ -10,7 +10,7 @@ def getPort():
     for i in range(0, N):
         port = ports[i]
         strPort = str(port)
-        if "com0com - serial port emulator" in strPort: #tùy theo tên port trên PC
+        if "COM11" in strPort: #tùy theo tên port trên PC
             splitPort = strPort.split(" ")
             commPort = (splitPort[0])
             #print(commPort)
@@ -19,7 +19,7 @@ def getPort():
 portName = getPort()
 
 if portName != "None":
-    ser = serial.Serial(port=portName, baudrate = 115200)
+    ser = serial.Serial(port=portName, baudrate = 9600)
     print(ser)
 else:
     print("NONE")
@@ -35,11 +35,12 @@ def processData(data, client):
     print(splitData)
     try:
         if splitData[0] == "HUMID":
-            print("Cap nhat HUMID qua sensor: ", splitData[1])
-            client.publish("humid-sensor", splitData[1])
+            print("Cap nhat HUMID qua sensor: ", round((int(splitData[1]) / 4096) * 100, 2))
+            client.publish("humid-sensor", round((int(splitData[1]) / 4096) * 100, 2))
+            writeSerial("OK")
         elif splitData[0] == "TEMP":
-            print("Cap nhat TEMP qua sensor: ", splitData[1])
-            client.publish("temp-sensor", splitData[1])
+            print("Cap nhat TEMP qua sensor: ", round((int(splitData[1]) / 4096) * 100, 2))
+            client.publish("temp-sensor", round((int(splitData[1]) / 4096) * 100, 2))
         # elif splitData[0] == "CAMBIEN3":
         #     print("Cap nhat cambien3 qua sensor: ", splitData[1])
         #     client.publish("cambien3", splitData[1])
@@ -63,7 +64,7 @@ def readSerial(client):
                 mess = ""
             else:
                 mess = mess[end + 1:]
-        #writeSerial(1)
+        #writeSerial("OK")
 
 def writeSerial(value):
     write_data = "!" + str(value) + "#"
